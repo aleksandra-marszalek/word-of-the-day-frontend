@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word of the Day</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a1a;
+      --paper: #f5f0e8;
+      --cream: #ede8dc;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a3;
+      --muted: #8a8070;
+      --success: #3d7a5c;
+      --error: #8b2e2e;
+      --border: #c8bfaa;
+    }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      background-image:
+        radial-gradient(ellipse at 20% 10%, rgba(201,168,76,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, rgba(201,168,76,0.06) 0%, transparent 50%);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .date-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    h1 span {
+      color: var(--gold);
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+      margin: 1rem auto 0;
+    }
+
+    main {
+      width: 100%;
+      max-width: 600px;
+      animation: fadeUp 0.7s ease 0.15s both;
+    }
+
+    /* Definition card */
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      box-shadow: 4px 4px 0 var(--cream);
+    }
+
+    .part-of-speech {
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+
+    .definition {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+
+    .phonetic {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .audio-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      transition: all 0.2s;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    .audio-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .word-length-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-top: 0.5rem;
+    }
+
+    /* Letter boxes */
+    .boxes-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .letter-boxes {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+    }
+
+    .letter-box {
+      width: 48px;
+      height: 56px;
+      border: 1.5px solid var(--border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+      background: white;
+      cursor: text;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      text-transform: uppercase;
+    }
+
+    .letter-box.active {
+      border-color: var(--gold);
+      background: #fffdf7;
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+    }
+
+    .letter-box.filled {
+      border-color: var(--ink);
+    }
+
+    .letter-box.correct {
+      border-color: var(--success);
+      background: #f0f7f3;
+      color: var(--success);
+      animation: pop 0.3s ease;
+    }
+
+    .letter-box.wrong {
+      border-color: var(--error);
+      background: #fdf3f3;
+      color: var(--error);
+      animation: shake 0.4s ease;
+    }
+
+    /* Hidden input trick */
+    #hidden-input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    /* Buttons */
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 0.875rem 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 500;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1.5px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #333;
+    }
+
+    .btn-primary:disabled {
+      background: var(--border);
+      border-color: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--ink);
+    }
+
+    /* Result states */
+    .result {
+      margin-top: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 2px;
+      text-align: center;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      display: none;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .result.success {
+      background: #f0f7f3;
+      border: 1.5px solid var(--success);
+      color: var(--success);
+      display: block;
+    }
+
+    .result.error {
+      background: #fdf3f3;
+      border: 1.5px solid var(--error);
+      color: var(--error);
+      display: block;
+    }
+
+    .result-emoji {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      font-style: normal;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .loading-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: bounce 1.2s ease infinite;
+    }
+
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    .error-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--error);
+    }
+
+    .error-state p {
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+
+    /* Animations */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    @media (max-width: 480px) {
+      .letter-box { width: 40px; height: 48px; font-size: 1.25rem; }
+      .letter-boxes { gap: 0.35rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="date-label" id="date-label">Loading...</p>
+  <h1>Word of the <span>Day</span></h1>
+  <div class="divider"></div>
+</header>
+
+<main>
+  <div id="loading-state" class="loading">
+    <p>Fetching today's word...</p>
+    <div class="loading-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div id="error-state" class="error-state" style="display:none">
+    <p class="result-emoji">📖</p>
+    <strong>No word available today</strong>
+    <p>Check back later or come back tomorrow.</p>
+  </div>
+
+  <div id="game" style="display:none">
+    <!-- Definition -->
+    <div class="card">
+      <p class="part-of-speech" id="part-of-speech"></p>
+      <p class="definition" id="definition"></p>
+      <div class="phonetic">
+        <button class="audio-btn" id="audio-btn" title="Listen" style="display:none">▶</button>
+        <span id="phonetic"></span>
+      </div>
+      <p class="word-length-hint" id="word-length-hint"></p>
+    </div>
+
+    <!-- Letter input -->
+    <p class="boxes-label">Your guess</p>
+    <input id="hidden-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="letter-boxes" id="letter-boxes"></div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-secondary" id="clear-btn">Clear</button>
+      <button class="btn btn-primary" id="guess-btn" disabled>Guess</button>
+    </div>
+
+    <!-- Result -->
+    <div class="result" id="result"></div>
+  </div>
+</main>
+
+<footer>
+  <p>A daily word challenge &mdash; come back tomorrow for a new word</p>
+</footer>
+
+<script>
+  const API_BASE = 'https://bjxlu6rqt8.execute-api.eu-west-1.amazonaws.com/Prod/api/v1/word';
+
+  let wordLength = 0;
+  let audioUrl = '';
+  let currentGuess = '';
+  let gameOver = false;
+
+  const els = {
+    loading: document.getElementById('loading-state'),
+    errorState: document.getElementById('error-state'),
+    game: document.getElementById('game'),
+    dateLabel: document.getElementById('date-label'),
+    partOfSpeech: document.getElementById('part-of-speech'),
+    definition: document.getElementById('definition'),
+    phonetic: document.getElementById('phonetic'),
+    audioBtn: document.getElementById('audio-btn'),
+    wordLengthHint: document.getElementById('word-length-hint'),
+    letterBoxes: document.getElementById('letter-boxes'),
+    hiddenInput: document.getElementById('hidden-input'),
+    clearBtn: document.getElementById('clear-btn'),
+    guessBtn: document.getElementById('guess-btn'),
+    result: document.getElementById('result'),
+  };
+
+  // Format date
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  // Build letter boxes
+  function buildBoxes(length) {
+    els.letterBoxes.innerHTML = '';
+    for (let i = 0; i < length; i++) {
+      const box = document.createElement('div');
+      box.className = 'letter-box';
+      box.dataset.index = i;
+      box.addEventListener('click', () => { if (!gameOver) focusInput(); });
+      els.letterBoxes.appendChild(box);
+    }
+    updateBoxes('');
+  }
+
+  function getBoxes() {
+    return [...els.letterBoxes.querySelectorAll('.letter-box')];
+  }
+
+  function updateBoxes(guess) {
+    const boxes = getBoxes();
+    boxes.forEach((box, i) => {
+      const char = guess[i] || '';
+      box.textContent = char.toUpperCase();
+      box.className = 'letter-box';
+      if (char) box.classList.add('filled');
+      if (i === guess.length && !gameOver) box.classList.add('active');
+    });
+    els.guessBtn.disabled = guess.length !== wordLength || gameOver;
+  }
+
+  function focusInput() {
+    els.hiddenInput.focus();
+  }
+
+  // Hidden input listener
+  els.hiddenInput.addEventListener('input', (e) => {
+    if (gameOver) return;
+    const raw = e.target.value.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    const clamped = raw.slice(0, wordLength);
+    currentGuess = clamped;
+    e.target.value = clamped;
+    updateBoxes(clamped);
+  });
+
+  els.hiddenInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && currentGuess.length === wordLength && !gameOver) {
+      submitGuess();
+    }
+  });
+
+  // Click anywhere on boxes area to focus
+  els.letterBoxes.addEventListener('click', focusInput);
+
+  // Clear
+  els.clearBtn.addEventListener('click', () => {
+    if (gameOver) return;
+    currentGuess = '';
+    els.hiddenInput.value = '';
+    updateBoxes('');
+    els.result.className = 'result';
+    focusInput();
+  });
+
+  // Guess
+  els.guessBtn.addEventListener('click', submitGuess);
+
+  async function submitGuess() {
+    if (currentGuess.length !== wordLength || gameOver) return;
+
+    els.guessBtn.disabled = true;
+    els.clearBtn.disabled = true;
+
+    try {
+      const res = await fetch(`${API_BASE}/guess`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guess: currentGuess }),
+      });
+
+      const data = await res.json();
+
+      if (data.correct) {
+        gameOver = true;
+        getBoxes().forEach(b => b.classList.add('correct'));
+        showResult(true);
+        localStorage.setItem('wotd-result', JSON.stringify({
+          date: new Date().toISOString().split('T')[0],
+          guess: currentGuess
+        }));
+      } else {
+        getBoxes().forEach(b => { if (b.classList.contains('filled')) b.classList.add('wrong'); });
+        showResult(false);
+        getBoxes().forEach(b => b.classList.remove('wrong'));
+        els.clearBtn.disabled = false;
+        els.guessBtn.disabled = false;
+        focusInput();
+      }
+    } catch (err) {
+      els.result.className = 'result error';
+      els.result.innerHTML = '<span class="result-emoji">⚠️</span><span class="result-title">Something went wrong</span>Please try again.';
+      els.clearBtn.disabled = false;
+      els.guessBtn.disabled = false;
+    }
+  }
+
+  function showResult(correct) {
+    const el = els.result;
+    if (correct) {
+      el.className = 'result success';
+      el.innerHTML = '<span class="result-emoji">✨</span><span class="result-title">Well done!</span>You guessed today\'s word correctly.<p>Come back tomorrow to learn another Word of the Day!</p>';
+    } else {
+      el.className = 'result error';
+      el.innerHTML = '<span class="result-emoji">🔍</span><span class="result-title">Not quite</span>Try again — you\'ve got this.';
+    }
+  }
+
+  // Audio
+  els.audioBtn.addEventListener('click', () => {
+    if (audioUrl) new Audio(audioUrl).play();
+  });
+
+  // Fetch word
+  async function fetchWord() {
+    try {
+      const res = await fetch(`${API_BASE}/today`);
+      if (!res.ok) throw new Error('No word');
+      const data = await res.json();
+
+      wordLength = data.length;
+      audioUrl = data.audioUrl || '';
+
+      els.dateLabel.textContent = data.date ? formatDate(data.date) : new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      els.partOfSpeech.textContent = data.partOfSpeech || '';
+      els.definition.textContent = data.definition;
+      els.phonetic.textContent = data.phonetic || '';
+
+      if (audioUrl) els.audioBtn.style.display = 'flex';
+
+      buildBoxes(wordLength);
+
+      els.loading.style.display = 'none';
+      els.game.style.display = 'block';
+
+      const saved = localStorage.getItem('wotd-result');
+      if (saved) {
+        const { date, guess } = JSON.parse(saved);
+        if (date === data.date) {
+          gameOver = true;
+          currentGuess = guess;
+          updateBoxes(guess);
+          getBoxes().forEach(b => b.classList.add('correct'));
+          showResult(true);
+          return;
+        }
+      }
+
+      setTimeout(focusInput, 100);
+    } catch (err) {
+      els.loading.style.display = 'none';
+      els.errorState.style.display = 'block';
+      els.dateLabel.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+  }
+
+  fetchWord();
+</script>
+</body>
+</html>
