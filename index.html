@@ -57,9 +57,7 @@
       color: var(--ink);
     }
 
-    h1 span {
-      color: var(--gold);
-    }
+    h1 span { color: var(--gold); }
 
     .divider {
       width: 60px;
@@ -74,14 +72,12 @@
       animation: fadeUp 0.7s ease 0.15s both;
     }
 
-    /* Definition card */
     .card {
       background: white;
       border: 1px solid var(--border);
       border-radius: 2px;
       padding: 2rem;
       margin-bottom: 2rem;
-      position: relative;
       box-shadow: 4px 4px 0 var(--cream);
     }
 
@@ -101,45 +97,13 @@
       color: var(--ink);
     }
 
-    .phonetic {
-      margin-top: 1rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .audio-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      transition: all 0.2s;
-      font-size: 0.7rem;
-      flex-shrink: 0;
-    }
-
-    .audio-btn:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-
     .word-length-hint {
       font-size: 0.7rem;
       color: var(--muted);
       letter-spacing: 0.1em;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
     }
 
-    /* Letter boxes */
     .boxes-label {
       font-size: 0.65rem;
       letter-spacing: 0.2em;
@@ -157,9 +121,15 @@
       justify-content: center;
     }
 
-    .letter-box {
+    .letter-box-wrapper {
+      position: relative;
       width: 48px;
       height: 56px;
+    }
+
+    .letter-box {
+      width: 100%;
+      height: 100%;
       border: 1.5px solid var(--border);
       border-radius: 2px;
       display: flex;
@@ -170,11 +140,28 @@
       font-weight: 700;
       color: var(--ink);
       background: white;
-      cursor: text;
-      transition: border-color 0.2s, background 0.2s;
-      position: relative;
       text-transform: uppercase;
+      pointer-events: none;
+      transition: border-color 0.2s, background 0.2s;
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 1;
     }
+
+    .letter-input {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 2;
+      cursor: text;
+      font-size: 16px;
+      border: none;
+      background: transparent;
+    }
+
+    .letter-input:disabled { cursor: default; pointer-events: none; }
 
     .letter-box.active {
       border-color: var(--gold);
@@ -182,9 +169,7 @@
       box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
     }
 
-    .letter-box.filled {
-      border-color: var(--ink);
-    }
+    .letter-box.filled { border-color: var(--ink); }
 
     .letter-box.correct {
       border-color: var(--success);
@@ -200,20 +185,32 @@
       animation: shake 0.4s ease;
     }
 
-    /* Hidden input trick */
-    #hidden-input {
-      position: absolute;
-      opacity: 0;
-      width: 1px;
-      height: 1px;
-      pointer-events: none;
+    .letter-box.hint {
+      border-color: var(--gold);
+      background: #fffbf0;
+      color: var(--gold);
     }
 
-    /* Buttons */
+    .letter-box.revealed {
+      border-color: var(--muted);
+      background: #f5f2ec;
+      color: var(--muted);
+    }
+
     .actions {
+      margin-top: 0.5rem;
+    }
+
+    .actions-row-main {
       display: flex;
       gap: 0.75rem;
-      margin-top: 0.5rem;
+      width: 100%;
+    }
+
+    .actions-row-secondary {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.75rem;
     }
 
     .btn {
@@ -236,9 +233,7 @@
       border-color: var(--ink);
     }
 
-    .btn-primary:hover:not(:disabled) {
-      background: #333;
-    }
+    .btn-primary:hover:not(:disabled) { background: #333; }
 
     .btn-primary:disabled {
       background: var(--border);
@@ -253,11 +248,91 @@
       border-color: var(--border);
     }
 
-    .btn-secondary:hover {
-      border-color: var(--ink);
+    .btn-secondary:hover:not(:disabled) { border-color: var(--ink); }
+
+    .btn-secondary:disabled {
+      color: var(--muted);
+      border-color: var(--border);
+      cursor: not-allowed;
     }
 
-    /* Result states */
+    .btn-hint {
+      background: transparent;
+      color: var(--gold);
+      border-color: var(--gold-light);
+      flex: 1;
+    }
+
+    .btn-hint:hover:not(:disabled) {
+      background: #fffbf0;
+      border-color: var(--gold);
+    }
+
+    .btn-hint:disabled {
+      color: var(--border);
+      border-color: var(--border);
+      cursor: not-allowed;
+    }
+
+    .btn-give-up {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0.25rem 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 0.2s;
+    }
+
+    .btn-give-up:hover:not(:disabled) { color: var(--error); text-decoration: none; }
+    .btn-give-up:disabled { color: var(--border); cursor: not-allowed; text-decoration: none; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,26,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.visible { display: flex; }
+
+    .modal {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 2rem;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 8px 8px 0 var(--cream);
+      animation: fadeUp 0.2s ease;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-body {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions { display: flex; gap: 0.75rem; }
+
     .result {
       margin-top: 1.5rem;
       padding: 1.25rem 1.5rem;
@@ -283,11 +358,14 @@
       display: block;
     }
 
-    .result-emoji {
-      font-size: 2rem;
+    .result.giveup {
+      background: #f5f2ec;
+      border: 1.5px solid var(--muted);
+      color: var(--muted);
       display: block;
-      margin-bottom: 0.5rem;
     }
+
+    .result-emoji { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
 
     .result-title {
       font-family: 'Playfair Display', serif;
@@ -298,7 +376,6 @@
       margin-bottom: 0.25rem;
     }
 
-    /* Loading */
     .loading {
       text-align: center;
       padding: 4rem 2rem;
@@ -329,11 +406,7 @@
       color: var(--error);
     }
 
-    .error-state p {
-      font-size: 0.85rem;
-      margin-top: 0.5rem;
-      color: var(--muted);
-    }
+    .error-state p { font-size: 0.85rem; margin-top: 0.5rem; color: var(--muted); }
 
     footer {
       margin-top: 3rem;
@@ -345,7 +418,6 @@
       animation: fadeUp 0.8s ease 0.3s both;
     }
 
-    /* Animations */
     @keyframes fadeDown {
       from { opacity: 0; transform: translateY(-16px); }
       to { opacity: 1; transform: translateY(0); }
@@ -376,7 +448,8 @@
     }
 
     @media (max-width: 480px) {
-      .letter-box { width: 40px; height: 48px; font-size: 1.25rem; }
+      .letter-box-wrapper { width: 40px; height: 48px; }
+      .letter-box { font-size: 1.25rem; }
       .letter-boxes { gap: 0.35rem; }
     }
   </style>
@@ -392,9 +465,7 @@
 <main>
   <div id="loading-state" class="loading">
     <p>Fetching today's word...</p>
-    <div class="loading-dots">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="loading-dots"><span></span><span></span><span></span></div>
   </div>
 
   <div id="error-state" class="error-state" style="display:none">
@@ -404,44 +475,56 @@
   </div>
 
   <div id="game" style="display:none">
-    <!-- Definition -->
     <div class="card">
       <p class="part-of-speech" id="part-of-speech"></p>
       <p class="definition" id="definition"></p>
-      <div class="phonetic">
-        <button class="audio-btn" id="audio-btn" title="Listen" style="display:none">▶</button>
-        <span id="phonetic"></span>
-      </div>
       <p class="word-length-hint" id="word-length-hint"></p>
     </div>
 
-    <!-- Letter input -->
     <p class="boxes-label">Your guess</p>
-    <input id="hidden-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <div class="letter-boxes" id="letter-boxes"></div>
 
-    <!-- Actions -->
     <div class="actions">
-      <button class="btn btn-secondary" id="clear-btn">Clear</button>
-      <button class="btn btn-primary" id="guess-btn" disabled>Guess</button>
+      <div class="actions-row-main">
+        <button class="btn btn-secondary" id="clear-btn">Clear</button>
+        <button class="btn btn-hint" id="hint-btn">Hint (3 left)</button>
+        <button class="btn btn-primary" id="guess-btn" disabled>Guess</button>
+      </div>
+      <div class="actions-row-secondary">
+        <button class="btn-give-up" id="give-up-btn">Give up</button>
+      </div>
     </div>
 
-    <!-- Result -->
     <div class="result" id="result"></div>
   </div>
 </main>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <p class="modal-title">Are you sure?</p>
+    <p class="modal-body">This will reveal today's word and end the game. You won't be able to guess again today.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+      <button class="btn btn-primary" id="modal-confirm">Yes, reveal it</button>
+    </div>
+  </div>
+</div>
 
 <footer>
   <p>A daily word challenge &mdash; come back tomorrow for a new word</p>
 </footer>
 
 <script>
-  const API_BASE = 'https://bjxlu6rqt8.execute-api.eu-west-1.amazonaws.com/Prod/api/v1/word';
+  const API_BASE = 'https://8lv1i6gga2.execute-api.eu-west-1.amazonaws.com/Prod/api/v1/word';
+  const MAX_HINTS = 3;
 
   let wordLength = 0;
-  let audioUrl = '';
-  let currentGuess = '';
+  let currentGuess = [];
   let gameOver = false;
+  let focusedIndex = 0;
+  let hintsUsed = 0;
+  let revealedPositions = []; // [{position, letter}]
 
   const els = {
     loading: document.getElementById('loading-state'),
@@ -450,117 +533,286 @@
     dateLabel: document.getElementById('date-label'),
     partOfSpeech: document.getElementById('part-of-speech'),
     definition: document.getElementById('definition'),
-    phonetic: document.getElementById('phonetic'),
-    audioBtn: document.getElementById('audio-btn'),
     wordLengthHint: document.getElementById('word-length-hint'),
     letterBoxes: document.getElementById('letter-boxes'),
-    hiddenInput: document.getElementById('hidden-input'),
     clearBtn: document.getElementById('clear-btn'),
+    hintBtn: document.getElementById('hint-btn'),
     guessBtn: document.getElementById('guess-btn'),
+    giveUpBtn: document.getElementById('give-up-btn'),
     result: document.getElementById('result'),
+    modalOverlay: document.getElementById('modal-overlay'),
+    modalCancel: document.getElementById('modal-cancel'),
+    modalConfirm: document.getElementById('modal-confirm'),
   };
 
-  // Format date
   function formatDate(dateStr) {
     const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    return d.toLocaleDateString('en-GB', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    }).toUpperCase();
   }
 
-  // Build letter boxes
+  function isHintPosition(idx) {
+    return revealedPositions.some(h => h.position === idx);
+  }
+
   function buildBoxes(length) {
     els.letterBoxes.innerHTML = '';
+    currentGuess = new Array(length).fill('');
+
     for (let i = 0; i < length; i++) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'letter-box-wrapper';
+
       const box = document.createElement('div');
       box.className = 'letter-box';
       box.dataset.index = i;
-      box.addEventListener('click', () => { if (!gameOver) focusInput(); });
-      els.letterBoxes.appendChild(box);
+
+      const input = document.createElement('input');
+      input.className = 'letter-input';
+      input.type = 'text';
+      input.inputMode = 'text';
+      input.autocomplete = 'off';
+      input.autocorrect = 'off';
+      input.autocapitalize = 'off';
+      input.spellcheck = false;
+      input.maxLength = 2;
+      input.dataset.index = i;
+
+      input.addEventListener('focus', () => {
+        if (!gameOver) { focusedIndex = i; updateActiveBox(); }
+      });
+
+      input.addEventListener('input', (e) => {
+        if (gameOver) return;
+        const idx = parseInt(e.target.dataset.index);
+        if (isHintPosition(idx)) return;
+        const raw = e.target.value.replace(/[^a-zA-Z]/g, '');
+        if (!raw) {
+          currentGuess[idx] = '';
+          e.target.value = '';
+          updateBoxDisplay();
+          updateGuessBtn();
+          return;
+        }
+        const char = raw[raw.length - 1].toLowerCase();
+        currentGuess[idx] = char;
+        e.target.value = char;
+        updateBoxDisplay();
+        updateGuessBtn();
+        let next = idx + 1;
+        while (next < wordLength && isHintPosition(next)) next++;
+        if (next < wordLength) focusBox(next);
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (gameOver) return;
+        const idx = parseInt(e.target.dataset.index);
+        if (e.key === 'Backspace') {
+          if (!isHintPosition(idx) && currentGuess[idx]) {
+            currentGuess[idx] = '';
+            e.target.value = '';
+            updateBoxDisplay();
+            updateGuessBtn();
+          } else {
+            let prev = idx - 1;
+            while (prev >= 0 && isHintPosition(prev)) prev--;
+            if (prev >= 0) {
+              currentGuess[prev] = '';
+              focusBox(prev);
+              updateBoxDisplay();
+              updateGuessBtn();
+            }
+          }
+          e.preventDefault();
+        }
+        if (e.key === 'Enter' && currentGuess.join('').length === wordLength) submitGuess();
+        if (e.key === 'ArrowLeft' && idx > 0) focusBox(idx - 1);
+        if (e.key === 'ArrowRight' && idx < wordLength - 1) focusBox(idx + 1);
+      });
+
+      wrapper.appendChild(box);
+      wrapper.appendChild(input);
+      els.letterBoxes.appendChild(wrapper);
     }
-    updateBoxes('');
+
+    updateBoxDisplay();
+    updateActiveBox();
   }
 
-  function getBoxes() {
-    return [...els.letterBoxes.querySelectorAll('.letter-box')];
+  function focusBox(idx) {
+    focusedIndex = idx;
+    const inputs = els.letterBoxes.querySelectorAll('.letter-input');
+    if (inputs[idx]) inputs[idx].focus();
+    updateActiveBox();
   }
 
-  function updateBoxes(guess) {
-    const boxes = getBoxes();
+  function updateActiveBox() {
+    const boxes = els.letterBoxes.querySelectorAll('.letter-box');
     boxes.forEach((box, i) => {
-      const char = guess[i] || '';
-      box.textContent = char.toUpperCase();
-      box.className = 'letter-box';
-      if (char) box.classList.add('filled');
-      if (i === guess.length && !gameOver) box.classList.add('active');
+      box.classList.remove('active');
+      if (i === focusedIndex && !gameOver) box.classList.add('active');
     });
-    els.guessBtn.disabled = guess.length !== wordLength || gameOver;
   }
 
-  function focusInput() {
-    els.hiddenInput.focus();
+  function updateBoxDisplay() {
+    const boxes = els.letterBoxes.querySelectorAll('.letter-box');
+    const inputs = els.letterBoxes.querySelectorAll('.letter-input');
+    boxes.forEach((box, i) => {
+      const hint = revealedPositions.find(h => h.position === i);
+      if (hint) {
+        box.textContent = hint.letter.toUpperCase();
+        box.classList.remove('filled', 'correct', 'wrong', 'active', 'revealed');
+        box.classList.add('hint');
+        inputs[i].disabled = true;
+        return;
+      }
+      const char = currentGuess[i] || '';
+      box.textContent = char.toUpperCase();
+      box.classList.remove('hint', 'correct', 'wrong', 'revealed');
+      box.classList.toggle('filled', !!char);
+      inputs[i].disabled = false;
+    });
   }
 
-  // Hidden input listener
-  els.hiddenInput.addEventListener('input', (e) => {
-    if (gameOver) return;
-    const raw = e.target.value.replace(/[^a-zA-Z]/g, '').toLowerCase();
-    const clamped = raw.slice(0, wordLength);
-    currentGuess = clamped;
-    e.target.value = clamped;
-    updateBoxes(clamped);
-  });
+  function updateGuessBtn() {
+    const filled = currentGuess.filter(c => c !== '').length;
+    els.guessBtn.disabled = filled !== wordLength || gameOver;
+  }
 
-  els.hiddenInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && currentGuess.length === wordLength && !gameOver) {
-      submitGuess();
+  function updateHintBtn() {
+    const remaining = MAX_HINTS - hintsUsed;
+    if (remaining <= 0 || gameOver) {
+      els.hintBtn.disabled = true;
+      els.hintBtn.textContent = remaining <= 0 ? 'No hints left' : 'Hint';
+    } else {
+      els.hintBtn.disabled = false;
+      els.hintBtn.textContent = `Hint (${remaining} left)`;
     }
-  });
+  }
 
-  // Click anywhere on boxes area to focus
-  els.letterBoxes.addEventListener('click', focusInput);
+  function updateButtons() {
+    updateHintBtn();
+    updateGuessBtn();
+    els.clearBtn.disabled = gameOver;
+    els.giveUpBtn.disabled = gameOver;
+  }
 
-  // Clear
+  // Clear — only non-hint boxes
   els.clearBtn.addEventListener('click', () => {
     if (gameOver) return;
-    currentGuess = '';
-    els.hiddenInput.value = '';
-    updateBoxes('');
+    currentGuess = currentGuess.map((c, i) => isHintPosition(i) ? c : '');
+    els.letterBoxes.querySelectorAll('.letter-input').forEach((input, i) => {
+      if (!isHintPosition(i)) input.value = '';
+    });
+    updateBoxDisplay();
+    updateGuessBtn();
     els.result.className = 'result';
-    focusInput();
+    let first = 0;
+    while (first < wordLength && isHintPosition(first)) first++;
+    if (first < wordLength) focusBox(first);
   });
+
+  // Hint
+  els.hintBtn.addEventListener('click', async () => {
+    if (hintsUsed >= MAX_HINTS || gameOver) return;
+    const positions = revealedPositions.map(h => h.position);
+    const query = positions.join(',');
+    try {
+      const res = await fetch(`${API_BASE}/hint?revealed=${query}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      revealedPositions.push({ position: data.position, letter: data.letter });
+      currentGuess[data.position] = data.letter;
+      hintsUsed++;
+      updateBoxDisplay();
+      updateButtons();
+      saveState();
+      let next = data.position + 1;
+      while (next < wordLength && isHintPosition(next)) next++;
+      if (next < wordLength) focusBox(next);
+    } catch (err) {}
+  });
+
+  // Give up modal
+  els.giveUpBtn.addEventListener('click', () => {
+    if (gameOver) return;
+    els.modalOverlay.classList.add('visible');
+  });
+
+  els.modalCancel.addEventListener('click', () => {
+    els.modalOverlay.classList.remove('visible');
+  });
+
+  els.modalOverlay.addEventListener('click', (e) => {
+    if (e.target === els.modalOverlay) els.modalOverlay.classList.remove('visible');
+  });
+
+  els.modalConfirm.addEventListener('click', async () => {
+    els.modalOverlay.classList.remove('visible');
+    await giveUp();
+  });
+
+  async function giveUp() {
+    try {
+      const res = await fetch(`${API_BASE}/reveal`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      gameOver = true;
+      const word = data.word;
+      word.split('').forEach((char, i) => { currentGuess[i] = char; });
+      els.letterBoxes.querySelectorAll('.letter-input').forEach((input, i) => {
+        input.value = currentGuess[i];
+        input.disabled = true;
+      });
+      const boxes = els.letterBoxes.querySelectorAll('.letter-box');
+      boxes.forEach((box, i) => {
+        box.textContent = word[i].toUpperCase();
+        box.classList.remove('filled', 'hint', 'correct', 'wrong', 'active');
+        box.classList.add('revealed');
+      });
+      updateButtons();
+      showGiveUpResult(word);
+      saveState(word);
+    } catch (err) {}
+  }
 
   // Guess
   els.guessBtn.addEventListener('click', submitGuess);
 
   async function submitGuess() {
-    if (currentGuess.length !== wordLength || gameOver) return;
-
+    const guess = currentGuess.join('');
+    if (guess.length !== wordLength || gameOver) return;
     els.guessBtn.disabled = true;
     els.clearBtn.disabled = true;
-
     try {
       const res = await fetch(`${API_BASE}/guess`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ guess: currentGuess }),
+        body: JSON.stringify({ guess }),
       });
-
       const data = await res.json();
-
       if (data.correct) {
         gameOver = true;
-        getBoxes().forEach(b => b.classList.add('correct'));
+        els.letterBoxes.querySelectorAll('.letter-box').forEach(b => {
+          b.classList.remove('filled', 'hint');
+          b.classList.add('correct');
+        });
+        updateActiveBox();
         showResult(true);
-        localStorage.setItem('wotd-result', JSON.stringify({
-          date: new Date().toISOString().split('T')[0],
-          guess: currentGuess
-        }));
+        saveState();
+        updateButtons();
       } else {
-        getBoxes().forEach(b => { if (b.classList.contains('filled')) b.classList.add('wrong'); });
+        els.letterBoxes.querySelectorAll('.letter-box').forEach(b => {
+          if (b.classList.contains('filled')) b.classList.add('wrong');
+        });
         showResult(false);
-        getBoxes().forEach(b => b.classList.remove('wrong'));
+        setTimeout(() => {
+          els.letterBoxes.querySelectorAll('.letter-box').forEach(b => b.classList.remove('wrong'));
+        }, 400);
         els.clearBtn.disabled = false;
         els.guessBtn.disabled = false;
-        focusInput();
+        focusBox(0);
       }
     } catch (err) {
       els.result.className = 'result error';
@@ -574,19 +826,86 @@
     const el = els.result;
     if (correct) {
       el.className = 'result success';
-      el.innerHTML = '<span class="result-emoji">✨</span><span class="result-title">Well done!</span>You guessed today\'s word correctly.<p>Come back tomorrow to learn another Word of the Day!</p>';
+      el.innerHTML = '<span class="result-emoji">✨</span><span class="result-title">Well done!</span>You guessed today\'s word correctly.';
     } else {
       el.className = 'result error';
       el.innerHTML = '<span class="result-emoji">🔍</span><span class="result-title">Not quite</span>Try again — you\'ve got this.';
     }
   }
 
-  // Audio
-  els.audioBtn.addEventListener('click', () => {
-    if (audioUrl) new Audio(audioUrl).play();
-  });
+  function showGiveUpResult(word) {
+    const el = els.result;
+    el.className = 'result giveup';
+    el.innerHTML = `<span class="result-emoji">📖</span><span class="result-title">The word was: ${word}</span>Come back tomorrow for a new word.`;
+  }
 
-  // Fetch word
+  function saveState(revealedWord) {
+    const state = {
+      date: window.currentWordDate,
+      hints: revealedPositions,
+      hintsUsed,
+    };
+    if (gameOver) {
+      if (revealedWord) {
+        state.givenUp = true;
+        state.revealedWord = revealedWord;
+      } else {
+        state.guess = currentGuess.join('');
+      }
+    }
+    localStorage.setItem('wotd-result', JSON.stringify(state));
+  }
+
+  function restoreState(data, saved) {
+    if (!saved || saved.date !== data.date) return false;
+
+    // Restore hints
+    if (saved.hints && saved.hints.length > 0) {
+      revealedPositions = saved.hints;
+      hintsUsed = saved.hintsUsed || saved.hints.length;
+      revealedPositions.forEach(h => { currentGuess[h.position] = h.letter; });
+    }
+
+    if (saved.givenUp && saved.revealedWord) {
+      gameOver = true;
+      const word = saved.revealedWord;
+      word.split('').forEach((char, i) => { currentGuess[i] = char; });
+      els.letterBoxes.querySelectorAll('.letter-input').forEach((input, i) => {
+        input.value = currentGuess[i];
+        input.disabled = true;
+      });
+      els.letterBoxes.querySelectorAll('.letter-box').forEach((box, i) => {
+        box.textContent = word[i].toUpperCase();
+        box.classList.remove('filled', 'hint', 'correct', 'wrong', 'active');
+        box.classList.add('revealed');
+      });
+      showGiveUpResult(word);
+      updateButtons();
+      return true;
+    }
+
+    if (saved.guess) {
+      gameOver = true;
+      saved.guess.split('').forEach((char, i) => { currentGuess[i] = char; });
+      els.letterBoxes.querySelectorAll('.letter-input').forEach((input, i) => {
+        input.value = currentGuess[i] || '';
+      });
+      updateBoxDisplay();
+      els.letterBoxes.querySelectorAll('.letter-box').forEach(b => {
+        b.classList.remove('filled', 'hint');
+        b.classList.add('correct');
+      });
+      showResult(true);
+      updateButtons();
+      return true;
+    }
+
+    // Hints restored but still playing
+    updateBoxDisplay();
+    updateButtons();
+    return false;
+  }
+
   async function fetchWord() {
     try {
       const res = await fetch(`${API_BASE}/today`);
@@ -594,38 +913,38 @@
       const data = await res.json();
 
       wordLength = data.length;
-      audioUrl = data.audioUrl || '';
+      window.currentWordDate = data.date;
 
-      els.dateLabel.textContent = data.date ? formatDate(data.date) : new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      els.dateLabel.textContent = data.date
+        ? formatDate(data.date)
+        : new Date().toLocaleDateString('en-GB', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+          }).toUpperCase();
+
       els.partOfSpeech.textContent = data.partOfSpeech || '';
       els.definition.textContent = data.definition;
-      els.phonetic.textContent = data.phonetic || '';
-
-      if (audioUrl) els.audioBtn.style.display = 'flex';
+      els.wordLengthHint.textContent = `${wordLength} letters`;
 
       buildBoxes(wordLength);
 
       els.loading.style.display = 'none';
       els.game.style.display = 'block';
 
-      const saved = localStorage.getItem('wotd-result');
-      if (saved) {
-        const { date, guess } = JSON.parse(saved);
-        if (date === data.date) {
-          gameOver = true;
-          currentGuess = guess;
-          updateBoxes(guess);
-          getBoxes().forEach(b => b.classList.add('correct'));
-          showResult(true);
-          return;
-        }
+      const savedRaw = localStorage.getItem('wotd-result');
+      if (savedRaw) {
+        const saved = JSON.parse(savedRaw);
+        const restored = restoreState(data, saved);
+        if (restored) return;
       }
 
-      setTimeout(focusInput, 100);
+      updateButtons();
+      setTimeout(() => focusBox(0), 100);
     } catch (err) {
       els.loading.style.display = 'none';
       els.errorState.style.display = 'block';
-      els.dateLabel.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      els.dateLabel.textContent = new Date().toLocaleDateString('en-GB', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      }).toUpperCase();
     }
   }
 

@@ -2,7 +2,8 @@
 
 A simple, elegant word guessing game powered by the [Word of the Day API](https://github.com/aleksandra-marszalek/word-of-the-day).
 
-Every day a new word is fetched from the API. Users see the definition and part of speech, then guess the word by filling in the letter boxes. The word length is shown as a hint. Correct guesses are remembered across page refreshes using localStorage.
+Every day a new word is fetched from the API. Users see the definition and part of speech, then guess the word by filling in the letter boxes. The word length is shown as a hint and additional hints are available.
+Correct guesses are remembered across page refreshes using localStorage.
 
 ![Word of the Day Screenshot](screenshot.png)
 
