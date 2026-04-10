@@ -513,12 +513,19 @@
 
 <footer>
   <p>A daily word challenge &mdash; come back tomorrow for a new word</p>
+  <p style="margin-top: 0.5rem; font-style: italic;">
+     By <a href="https://aleksandramarszalek.co.uk" 
+       style="color: var(--ink); opacity: 0.5; text-decoration: underline; font-style: italic; text-underline-offset: 3px; font-size: 0.65rem; letter-spacing: 0.15em;"
+       target="_blank" rel="noopener">
+      Aleksandra Marszalek
+    </a>
+  </p>
 </footer>
 
 <script>
   const API_BASE = 'https://8lv1i6gga2.execute-api.eu-west-1.amazonaws.com/Prod/api/v1/word';
-  const MAX_HINTS = 3;
-
+  
+  let maxHints = 3;
   let wordLength = 0;
   let currentGuess = [];
   let gameOver = false;
@@ -681,7 +688,7 @@
   }
 
   function updateHintBtn() {
-    const remaining = MAX_HINTS - hintsUsed;
+    const remaining = maxHints - hintsUsed;
     if (remaining <= 0 || gameOver) {
       els.hintBtn.disabled = true;
       els.hintBtn.textContent = remaining <= 0 ? 'No hints left' : 'Hint';
@@ -715,7 +722,7 @@
 
   // Hint
   els.hintBtn.addEventListener('click', async () => {
-    if (hintsUsed >= MAX_HINTS || gameOver) return;
+    if (hintsUsed >= maxHints || gameOver) return;
     const positions = revealedPositions.map(h => h.position);
     const query = positions.join(',');
     try {
@@ -914,6 +921,7 @@
 
       wordLength = data.length;
       window.currentWordDate = data.date;
+      maxHints = Math.min(maxHints, wordLength - 1);
 
       els.dateLabel.textContent = data.date
         ? formatDate(data.date)
