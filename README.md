@@ -10,7 +10,7 @@ Correct guesses are remembered across page refreshes using localStorage.
 
 ## Live demo
 
-You can now play the game [here](https://word-of-the-day-frontend.s3.eu-west-1.amazonaws.com/index.html)
+You can now play the game [here](https://wotd.aleksandramarszalek.co.uk/)
 
 ---
 
